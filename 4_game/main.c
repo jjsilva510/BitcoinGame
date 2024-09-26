@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "GameCharacter.c"
 #include "GameSprites.c"
+#include "title_screen_loop.h"
+
 
 struct GameCharacter ship;
 struct GameCharacter bug; 
@@ -66,6 +68,7 @@ void setupbug()
 
 void main()
 {
+    init_title_screen();
     set_sprite_data(0, 8, GameSprites);
     setupship();
     setupbug();
