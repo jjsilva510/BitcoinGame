@@ -3,8 +3,11 @@
 #include "GameCharacter.c"
 #include "GameSprites.c"
 
+
 struct GameCharacter ship;
 struct GameCharacter bug; 
+struct GameCharacter bullet; //TS
+
 UBYTE spritesize = 8;
 
 void performantdelay(UINT8 numloops)
@@ -30,6 +33,7 @@ void setupship()
     ship.y = 130;
     ship.width = 16;
     ship.height = 16;
+    //above is the location and size of ship sprite.
 
     // load sprites for ship
     set_sprite_tile(0, 0);
@@ -46,10 +50,11 @@ void setupship()
 
 void setupbug()
 {
-    bug.x = 30;
-    bug.y = 0;
+    bug.x = 80;
+    bug.y = 30;
     bug.width = 16;
     bug.height = 16;
+    //above is the location and size of bug sprite.
 
     // load sprites for bug
     set_sprite_tile(4, 4);
@@ -64,11 +69,31 @@ void setupbug()
     movegamecharacter(&bug, bug.x, bug.y);
 }
 
+void setupbullet() // TS *whole method
+{
+    bullet.x = 80;
+    bullet.y = 130;
+    bullet.width = 16;
+    bullet.height = 16;
+
+    set_sprite_tile(8, 8);
+    bullet.spritids[0] = 8;
+    set_sprite_tile(9, 9);
+    bullet.spritids[1] = 9;
+    set_sprite_tile(10, 10);
+    bullet.spritids[2] = 10;
+    set_sprite_tile(11, 11);
+    bullet.spritids[3] = 11;
+
+    movegamecharacter(&bullet, bullet.x, bullet.y);
+}
+
 void main()
 {
-    set_sprite_data(0, 8, GameSprites);
+    set_sprite_data(0, 12, GameSprites);
     setupship();
     setupbug();
+    setupbullet();
 
     SHOW_SPRITES;
     DISPLAY_ON;
@@ -87,6 +112,7 @@ void main()
         }
 
         bug.y += 5;
+        // Moves bug sprite down from top of screen
 
         if (bug.y >= 144)
         {
@@ -94,8 +120,26 @@ void main()
             bug.x = ship.x;
         }
 
-        movegamecharacter(&bug, bug.x, bug.y);
+        movegamecharacter(&bug, bug.x, bug.y)
 
+        if (joypad() & J_A) 
+        // (9/29) Finally works, but needs fixing.
+        {
+            //bullet.y -= 5;
+            bullet.y = ship.y - 8;
+            while (bullet.y >= 30)
+            {
+                bullet.y -= 5;
+                //if (bullet.y <= 0)
+                //{
+                //    bullet.y = 255;                    
+                //}
+                movegamecharacter(&bullet, bullet.x, bullet.y);
+                performantdelay(5);
+            }
+            bullet.y = 0;
+            movegamecharacter(&bullet, bullet.x, bullet.y);
+        }
         performantdelay(5);
     }
 }
